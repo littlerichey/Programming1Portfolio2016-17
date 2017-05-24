@@ -31,11 +31,13 @@ class Save:
             self.allTime[self.week][self.wday].append(0)
             self.allTime[self.week][self.wday][0] += self.cal
             self.allTime[self.week][self.wday].extend([self.req])
+            self.allTime[self.week][self.wday].append(time.time())
             print self.allTime
         else:
             self.allTime[self.week][self.wday].append(0)
             self.allTime[self.week][self.wday][0] += self.cal
             self.allTime[self.week][self.wday].extend([self.req])
+            self.allTime[self.week][self.wday].append(time.time())
             print self.allTime
 
     def addweek(self):
