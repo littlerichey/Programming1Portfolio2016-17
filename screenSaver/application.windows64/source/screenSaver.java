@@ -15,7 +15,7 @@ import java.io.IOException;
 public class screenSaver extends PApplet {
 
 Lines[] pipes = new Lines[12];
-Spiral spiral;
+Spiral[] spirals = new Spiral[5];
 //I created diagonals, but didn't use them because i didn't like the look
 public void setup() {
     
@@ -26,7 +26,13 @@ public void setup() {
   for(int i=0; i<pipes.length; i++) {
     pipes[i] = new Lines(random(width),random(height),random(2,5),random(1,20));
   }
-  spiral = new Spiral();
+  spirals[0] = new Spiral();
+  int qy= height/4;
+  spirals[1] = new Spiral(width/4,qy);
+  spirals[2] = new Spiral(width/4,height-qy);
+  spirals[3] = new Spiral((width/4*3),qy);
+  spirals[4] = new Spiral((width/4*3),height-qy);
+  
 //  frameRate(20);
 }
 
@@ -38,7 +44,9 @@ public void draw() {
     
   }*/
   background(0);
-  spiral.display();
+  for(Spiral i: spirals){
+    i.display();
+  }
 }
 class Lines {
   float x, y, strokeW, pointCount, reset;
@@ -140,18 +148,32 @@ class Lines {
     }
   }
 }
- //<>// //<>//
+//<>// //<>//
 class Spiral {
-  int cx = width/2;
-  int cy = height/2;
-  int nx = width/2;
-  int ny = height/2;
+  int cx, cy, nx, ny, ix, iy;
   int c=color(random(256), random(256), random(256));
   int step = 0;
   ArrayList<int[]> spiral = new ArrayList(0);
-  int rand = PApplet.parseInt(random(5));
+  int rand = PApplet.parseInt(random(1,5));
   boolean out = true;
+  boolean sys = false;
   Spiral() {
+    this.ix = width/2;
+    this.iy = height/2;
+    quick();
+  }
+  Spiral(int x, int y) {
+    this.ix = x;
+    this.iy = y;
+    quick();
+    sys = true;
+    rand=1;
+  }
+  public void quick() {
+    this.cx = ix;
+    this.nx = ix;
+    this.cy = iy;
+    this.ny = iy;
   }
   public void display() {
     if (out) {
@@ -162,16 +184,16 @@ class Spiral {
       }
       this.cx=this.nx;
       this.cy=this.ny;
-      if (rand>2) {
-        this.nx= width/2 + PApplet.parseInt(cos(step*180/3.14f)*abs(step));
-        this.ny= height/2 + PApplet.parseInt(sin(step*180/3.14f)*abs(step));
+      if ((rand%4)>=2) {
+        this.nx= ix + PApplet.parseInt(cos(step*180/3.14f)*abs(step));
+        this.ny= iy + PApplet.parseInt(sin(step*180/3.14f)*abs(step));
       } else {
-        this.nx= width/2 + PApplet.parseInt(cos(step)*step);
-        this.ny= height/2 + PApplet.parseInt(sin(step)*step);
+        this.nx= ix + PApplet.parseInt(cos(step)*step);
+        this.ny= iy + PApplet.parseInt(sin(step)*step);
       }
       int[] temp = {this.cx, this.cy, this.nx, this.ny};
       this.spiral.add(temp);
-    }else{
+    } else {
       spiral.remove(spiral.size()-1);
     }
     for (int[] i : spiral) {
@@ -183,13 +205,14 @@ class Spiral {
     }
 
     if (spiral.size()==0) {
-      cx = width/2;
-      cy = height/2;
-      nx = width/2;
-      ny = height/2;
+      quick();
       c=color(random(25, 256), random(25, 256), random(25, 256));
       step = 0;
-      rand = PApplet.parseInt(random(5));
+      if (!sys) {
+        rand = PApplet.parseInt(random(5));
+      } else {
+        rand++;
+      }
       out = true;
     }
   }
